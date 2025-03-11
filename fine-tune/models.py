@@ -70,7 +70,11 @@ def generate_output(model, tokenizer, input_prompt, max_new_tokens=100):
             pad_token_id=tokenizer.eos_token_id,
             do_sample=False,
         )
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    if output_text.startswith(input_prompt):
+        return output_text[len(input_prompt) :].strip()
+    else:
+        return output_text
 
 
 def run_inference(model, tokenizer, datasets, model_name="Base Model"):
@@ -82,7 +86,7 @@ def run_inference(model, tokenizer, datasets, model_name="Base Model"):
         generated_text = generate_output(model, tokenizer, input_text)
         results.append(
             {
-                "example_id": i,
+                "example_id": i + 1,
                 "prompt": input_text,
                 "expected": expected_output,
                 "generated": generated_text,
