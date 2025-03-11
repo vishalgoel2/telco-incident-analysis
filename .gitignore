@@ -1,5 +1,6 @@
 secret
 fine-tune/dataset.json
+synthetic-data-generation/incident_data.xlsx
 
 .idea/
 *.iml
