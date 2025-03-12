@@ -178,7 +178,7 @@ MODEL_CONFIGS = {
             per_device_eval_batch_size=32,
             gradient_accumulation_steps=1,
             learning_rate=5e-4,
-            num_train_epochs=4,
+            num_train_epochs=6,
             logging_steps=50,
             evaluation_strategy="steps",
             eval_steps=100,
@@ -210,7 +210,87 @@ MODEL_CONFIGS = {
             per_device_eval_batch_size=24,
             gradient_accumulation_steps=1,
             learning_rate=5e-4,
+            num_train_epochs=6,
+            logging_steps=50,
+            evaluation_strategy="steps",
+            eval_steps=100,
+            save_steps=100,
+            save_total_limit=3,
+            load_best_model_at_end=True,
+            metric_for_best_model="loss",
+            greater_is_better=False,
+            fp16=True,
+            report_to="none",
+        ),
+    },
+    7: {
+        "display_name": "Mistral Nemo Instruct (int8)",
+        "model_id": "mistralai/Mistral-Nemo-Instruct-2407",
+        "model_name": "mistral-nemo",
+        "precision": "int8",
+        "lora_config": LoraConfig(
+            r=32,
+            lora_alpha=64,
+            target_modules=[
+                "q_proj",
+                "k_proj",
+                "v_proj",
+                "o_proj",
+                "gate_proj",
+                "up_proj",
+                "down_proj",
+            ],
+            lora_dropout=0.1,
+            bias="none",
+            task_type="CAUSAL_LM",
+        ),
+        "training_args": TrainingArguments(
+            output_dir="./lora_finetuned_mistral_nemo_int8",
+            per_device_train_batch_size=16,
+            per_device_eval_batch_size=16,
+            gradient_accumulation_steps=2,
+            learning_rate=3e-4,
             num_train_epochs=4,
+            logging_steps=50,
+            evaluation_strategy="steps",
+            eval_steps=100,
+            save_steps=100,
+            save_total_limit=3,
+            load_best_model_at_end=True,
+            metric_for_best_model="loss",
+            greater_is_better=False,
+            fp16=False,
+            report_to="none",
+        ),
+    },
+    8: {
+        "display_name": "Mistral Nemo Instruct (fp16)",
+        "model_id": "mistralai/Mistral-Nemo-Instruct-2407",
+        "model_name": "mistral-nemo",
+        "precision": "fp16",
+        "lora_config": LoraConfig(
+            r=32,
+            lora_alpha=64,
+            target_modules=[
+                "q_proj",
+                "k_proj",
+                "v_proj",
+                "o_proj",
+                "gate_proj",
+                "up_proj",
+                "down_proj",
+            ],
+            lora_dropout=0.1,
+            bias="none",
+            task_type="CAUSAL_LM",
+        ),
+        "training_args": TrainingArguments(
+            output_dir="./lora_finetuned_mistral_nemo_fp16",
+            per_device_train_batch_size=8,
+            per_device_eval_batch_size=8,
+            gradient_accumulation_steps=4,
+            learning_rate=3e-4,
+            num_train_epochs=3,
             logging_steps=50,
             evaluation_strategy="steps",
             eval_steps=100,
@@ -232,9 +312,9 @@ def select_model() -> ModelConfig:
         print(f"{choice}. {config['display_name']}")
     while True:
         try:
-            choice = int(input("Enter your choice (1-6): "))
+            choice = int(input("Enter your choice (1-8): "))
             if choice not in MODEL_CONFIGS:
-                print("Invalid choice. Please enter a number between 1 and 6.")
+                print("Invalid choice. Please enter a number between 1 and 8.")
                 continue
             break
         except ValueError:
@@ -251,4 +331,4 @@ def select_model() -> ModelConfig:
 
 
 def requires_auth(model_name: str) -> bool:
-    return model_name.startswith("llama")
+    return model_name.startswith("llama") or model_name == "mistral-nemo"
