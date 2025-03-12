@@ -1,6 +1,7 @@
 secret
 fine-tune/dataset.json
 synthetic-data-generation/incident_data.xlsx
+synthetic-data-generation/telco_incidents.db
 
 .idea/
 *.iml
