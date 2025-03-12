@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 from pydantic import BaseModel
 
@@ -8,7 +9,7 @@ from store import get_all_scenario_datasets
 
 class PromptContent(BaseModel):
     issueDescription: str
-    actionsTaken: str
+    actionsTaken: List[str]
 
 
 class CompletionContent(BaseModel):

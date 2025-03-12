@@ -1,48 +1,75 @@
+import sqlite3
 from typing import List
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from google.cloud.firestore import FieldFilter
+DB_FILE = "telco_incidents.db"
 
-collection_name = "telco-incident-data"
 
-cred = credentials.Certificate("../secret/firestore_sa.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+def get_db_connection():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+    CREATE TABLE IF NOT EXISTS INCIDENTS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        scenario TEXT NOT NULL,
+        dataset TEXT,
+        generated BOOLEAN DEFAULT 0
+    )
+    """
+    )
+    conn.commit()
+    return conn
 
 
 def insert_scenarios(scenarios: List[str]):
-    story_collection = db.collection(collection_name)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     for scenario in scenarios:
-        story_collection.add({"scenario": scenario})
+        cursor.execute(
+            f"INSERT INTO INCIDENTS (scenario, generated) VALUES (?, ?)",
+            (scenario, False),
+        )
+    conn.commit()
+    conn.close()
 
 
-def get_scenario_to_generate():
-    query = db.collection(collection_name).where(
-        filter=FieldFilter(field_path="generated", op_string="==", value=False)
+def get_scenario_to_generate(order="ASC"):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        f"SELECT * FROM INCIDENTS WHERE generated = 0 ORDER BY ID {order} LIMIT 1"
     )
-    scenarios = query.limit(1).stream()
-    matching_scenarios = [
-        {"id": scenario.id, **scenario.to_dict()} for scenario in scenarios
-    ]
-    return matching_scenarios[0] if matching_scenarios else None
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        scenario = dict(row)
+        return scenario
+    return None
 
 
 def update_scenario(scenario, datasets):
-    scenario["dataset"] = datasets.model_dump_json()
-    scenario["generated"] = True
-    db.collection(collection_name).document(scenario["id"]).update(scenario)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    dataset_json = datasets.model_dump_json()
+    cursor.execute(
+        f"UPDATE INCIDENTS SET dataset = ?, generated = 1 WHERE id = ?",
+        (dataset_json, scenario["id"]),
+    )
+    conn.commit()
+    conn.close()
 
 
 def get_all_scenario_datasets(limit: int = 200) -> List[str]:
-    query = db.collection(collection_name).limit(limit)
-    scenarios = query.stream()
-
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        f"SELECT dataset FROM INCIDENTS WHERE dataset IS NOT NULL LIMIT ?", (limit,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
     datasets = []
-    for scenario in scenarios:
-        scenario_data = scenario.to_dict()
-        if "dataset" in scenario_data and scenario_data["dataset"]:
-            datasets.append(scenario_data["dataset"])
-
+    for row in rows:
+        if row["dataset"]:
+            datasets.append(row["dataset"])
     return datasets
