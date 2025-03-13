@@ -61,7 +61,7 @@ def train_and_save_adapter(
     model.save_pretrained(output_dir)
 
 
-def generate_output(model, tokenizer, input_prompt, max_new_tokens=100):
+def generate_output(model, tokenizer, input_prompt, max_new_tokens=200):
     inputs = tokenizer(input_prompt, return_tensors="pt").to(model.device)
     with torch.no_grad():
         outputs = model.generate(
@@ -77,11 +77,14 @@ def generate_output(model, tokenizer, input_prompt, max_new_tokens=100):
         return output_text
 
 
-def run_inference(model, tokenizer, datasets, model_name="Base Model"):
+def run_inference(model, tokenizer, datasets, model_name):
     results = []
     print(f"\n--- Running inference with {model_name} ---")
     for i, dataset in enumerate(tqdm(datasets)):
-        input_text = dataset["prompt"]
+        if "mistral-nemo" in model_name:
+            input_text = f"<|user|>\n{dataset['prompt']}<|endoftext|>\n<|assistant|>"
+        else:
+            input_text = dataset["prompt"]
         expected_output = dataset["completion"]
         generated_text = generate_output(model, tokenizer, input_text)
         results.append(

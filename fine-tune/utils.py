@@ -12,7 +12,7 @@ def clean_memory():
 
 def authenticate_huggingface():
     print("\n--- Hugging Face Authentication ---")
-    print("Meta Llama models require authentication with Hugging Face.")
+    print("Meta Llama and Mistral models require authentication with Hugging Face.")
     print("Your token will not be displayed or stored in command history.")
     hf_token = getpass.getpass("Enter your Hugging Face token: ")
 

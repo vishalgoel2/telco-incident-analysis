@@ -38,7 +38,7 @@ def main():
     print("Loading base model for initial inference...")
     base_model = load_model(model_config.model_id, model_config.use_8bit)
     base_results = run_inference(
-        base_model, tokenizer, inference_examples, "Base Model"
+        base_model, tokenizer, inference_examples, f"{model_config.model_name} - Base"
     )
     save_results(base_results, paths["results"])
 
@@ -68,7 +68,10 @@ def main():
     base_model = load_model(model_config.model_id, model_config.use_8bit)
     lora_model = load_finetuned_model(base_model, paths["lora_output_dir"])
     lora_results = run_inference(
-        lora_model, tokenizer, inference_examples, "LoRA Fine-tuned Model"
+        lora_model,
+        tokenizer,
+        inference_examples,
+        f"{model_config.model_name} - Fine-tuned",
     )
     all_results = base_results + lora_results
     save_results(all_results, paths["results"])
