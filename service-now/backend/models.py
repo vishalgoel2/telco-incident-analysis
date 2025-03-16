@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Enum
-from database import Base
 import enum
+
+from sqlalchemy import Column, Integer, String
+
+from database import Base
 
 
 class StatusEnum(str, enum.Enum):

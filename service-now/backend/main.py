@@ -1,7 +1,8 @@
+from typing import List
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import List
 
 import models
 import schemas
@@ -67,7 +68,4 @@ def update_incident(
     return db_incident
 
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+# fastapi run main.py
