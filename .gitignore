@@ -1,8 +1,9 @@
 secret
-fine-tune/dataset.json
+model-training/dataset.json
 synthetic-data-generation/incident_data.xlsx
 synthetic-data-generation/telco_incidents.db
 service-now/backend/incidents.db
+service-now/backend/init.sql
 
 .idea/
 *.iml
@@ -10,3 +11,4 @@ service-now/backend/incidents.db
 
 **/__pycache__/
 **/node_modules/
+**/build/

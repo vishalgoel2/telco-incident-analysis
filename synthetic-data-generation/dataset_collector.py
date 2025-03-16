@@ -54,7 +54,7 @@ def main():
                 )
             )
     training_data = [example.model_dump() for example in training_examples]
-    with open("../fine-tune/dataset.json", "w") as f:
+    with open("../model-training/dataset.json", "w") as f:
         json.dump(training_data, f, indent=4)
 
 
