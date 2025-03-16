@@ -2,9 +2,11 @@ secret
 fine-tune/dataset.json
 synthetic-data-generation/incident_data.xlsx
 synthetic-data-generation/telco_incidents.db
+service-now/backend/incidents.db
 
 .idea/
 *.iml
 .DS_Store
 
 **/__pycache__/
+**/node_modules/

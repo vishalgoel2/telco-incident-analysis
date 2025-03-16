@@ -9,7 +9,7 @@ from store import get_scenario_to_generate, update_scenario
 
 class Dataset(BaseModel):
     issueDescription: str
-    actionsTaken: List[str]
+    actionsTaken: str | List[str]
     resolution: str
     rca: str
 
