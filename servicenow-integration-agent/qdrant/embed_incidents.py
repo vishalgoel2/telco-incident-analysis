@@ -28,10 +28,6 @@ def main():
             page_content=content,
             metadata={
                 "incident_id": incident.get("id", str(uuid.uuid4())),
-                "description": incident.get("description", ""),
-                "actionsTaken": incident.get("actions_taken", ""),
-                "rca": incident.get("rca", ""),
-                "resolution": incident.get("resolution", ""),
             },
         )
         documents.append(doc)

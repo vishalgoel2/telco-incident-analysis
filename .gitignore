@@ -5,6 +5,7 @@ synthetic-data-generation/telco_incidents.db
 service-now/backend/incidents.db
 service-now/backend/init.sql
 servicenow-integration-agent/qdrant/data/
+model-training/lora*
 
 .idea/
 *.iml
